@@ -173,7 +173,7 @@ export class QAEngine {
         score: Number(result.score.toFixed(4)),
         title: result.chunk.title,
         heading: result.chunk.heading,
-        headingPath: result.chunk.headingPathString,
+        headingPath: result.chunk.headingPath,
         spaceKey: result.chunk.spaceKey,
         included: includedIds.has(result.chunk.id),
       })),

@@ -32,7 +32,6 @@ export function ChatWindow({
         sendMessage,
         isLoading,
         error,
-        connectionStatus,
         retry,
         retryCount
       } = useChat({
