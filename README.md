@@ -1,5 +1,7 @@
 # Confluence QA MVP
 
+基于Confluence 的智能文档问答系统: https://lantu2019.feishu.cn/wiki/YEaywLvadiiywYkWDuLcUQ20nwg?from=from_copylink
+ 
 Conversational question answering experience for Confluence documentation, built with Next.js 15, TypeScript, Pinecone, and OpenAI. The app ingests Confluence pages, vectorises them into Pinecone, and serves a streaming chat experience at `/qa` that cites source references inline.
 
 ## Environment Variables
