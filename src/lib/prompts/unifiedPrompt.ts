@@ -10,20 +10,14 @@ const TRACE_FLAG = /^(1|true|yes)$/i.test(
 
 const MAX_TRACE_PREVIEW = Number.parseInt(process.env.PROMPT_TRACE_PREVIEW_LENGTH ?? '2000', 10);
 
-export interface PromptSection {
-  title: string;
-  content: string | null | undefined;
-}
-
 export interface BuildUnifiedUserPromptOptions {
   question: string;
   chatHistory?: string | null;
   instructions?: string | null;
-  contextSections?: PromptSection[];
 }
 
 export function buildUnifiedUserPrompt(options: BuildUnifiedUserPromptOptions): string {
-  const { question, chatHistory, instructions, contextSections = [] } = options;
+  const { question, chatHistory, instructions } = options;
 
   const sections: string[] = [];
   const pushSection = (label: string, value: string | null | undefined) => {
@@ -39,17 +33,6 @@ export function buildUnifiedUserPrompt(options: BuildUnifiedUserPromptOptions): 
   }
 
   pushSection('Conversation History', chatHistory ?? undefined);
-
-  contextSections
-    .map((section) => ({
-      title: section.title.trim() || 'Context',
-      content: section.content?.trim(),
-    }))
-    .filter((section) => !!section.content)
-    .forEach((section) => {
-      pushSection(section.title, section.content ?? undefined);
-    });
-
   pushSection('User Question', question);
 
   return sections.join('\n\n---\n\n');
@@ -111,8 +94,3 @@ export function tracePrompt(
   console.debug(JSON.stringify(payload));
 }
 
-export const QA_USER_PROMPT_INSTRUCTIONS = `### Task Overview
-- Follow the system-level guidelines above.
-- Use the retrieval context when it is relevant and cite sources inline (e.g., [1]).
-- If no meaningful context exists, explicitly mention this before answering from general knowledge.
-- If you cite nothing, do **not** add a References section.`;

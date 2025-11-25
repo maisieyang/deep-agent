@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 // 标准SSE事件类型
 enum SSEEventType {
   CONTENT = 'content',
-  DONE = 'done', 
+  DONE = 'done',
   ERROR = 'error',
   METADATA = 'metadata'
 }
@@ -46,7 +46,7 @@ const CHAT_USER_PROMPT_INSTRUCTIONS = `### Task
 const buildSSEMessage = (type: SSEEventType, data: string, id?: string): string => {
   const message: SSEMessage = { type, data };
   if (id) message.id = id;
-  
+
   return `data: ${JSON.stringify(message)}\n\n`;
 };
 
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim()).filter(Boolean)
     : [];
   const devOrigins = process.env.NODE_ENV !== 'production'
-    ? ['http://localhost:3000', 'http://127.0.0.1:3000']
+    ? ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://127.0.0.1:3001']
     : [];
 
   const allowedOrigins = [...new Set([...baseOrigins, ...envOrigins, ...devOrigins])];
@@ -123,19 +123,19 @@ export async function POST(req: NextRequest) {
       }
     );
   }
-  
+
   try {
     const body = await req.json();
     const messages: VercelChatMessage[] = body.messages ?? [];
     const requestedProvider = typeof body.provider === 'string' ? body.provider : undefined;
     const provider = resolveProvider(requestedProvider);
-    
+
     // 输入验证
     if (!messages.length || !messages[messages.length - 1]?.content) {
       metrics.errorCount++;
       return NextResponse.json(
-        { error: 'Invalid request: missing messages or content' }, 
-        { 
+        { error: 'Invalid request: missing messages or content' },
+        {
           status: 400,
           headers: {
             'Access-Control-Allow-Origin': effectiveOrigin,
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
 
     // 创建标准SSE流式响应
     const encoder = new TextEncoder();
-    
+
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
@@ -204,18 +204,18 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(
             buildSSEMessage(SSEEventType.DONE, '', `${metrics.requestId}-done`)
           ));
-          
+
           controller.close();
           logPerformanceMetrics(metrics);
-          
+
         } catch (error) {
           metrics.errorCount++;
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          
+
           controller.enqueue(encoder.encode(
             buildSSEMessage(SSEEventType.ERROR, errorMessage, `${metrics.requestId}-error`)
           ));
-          
+
           controller.close();
           logPerformanceMetrics(metrics, error as Error);
         }
@@ -234,16 +234,16 @@ export async function POST(req: NextRequest) {
         Vary: 'Origin',
       },
     });
-    
+
   } catch (e: unknown) {
     metrics.errorCount++;
     const error = e as Error;
     logPerformanceMetrics(metrics, error);
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       error: error.message,
-      requestId: metrics.requestId 
-    }, { 
+      requestId: metrics.requestId
+    }, {
       status: 500,
       headers: {
         'Access-Control-Allow-Origin': effectiveOrigin,

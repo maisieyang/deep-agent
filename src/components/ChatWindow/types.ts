@@ -1,16 +1,9 @@
 import type { ReactNode } from 'react';
 
-export interface ReferenceLink {
-  index: number;
-  title: string;
-  url?: string;
-}
-
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: Date;
-  references?: ReferenceLink[];
   metadata?: Record<string, unknown>;
 }
 

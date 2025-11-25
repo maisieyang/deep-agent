@@ -24,17 +24,17 @@ export function ChatWindow({
   // 输入框引用
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-      // 使用自定义 useChat Hook
-      const {
-        messages,
-        input,
-        setInput,
-        sendMessage,
-        isLoading,
-        error,
-        retry,
-        retryCount
-      } = useChat({
+  // 使用自定义 useChat Hook
+  const {
+    messages,
+    input,
+    setInput,
+    sendMessage,
+    isLoading,
+    error,
+    retry,
+    retryCount
+  } = useChat({
     apiUrl,
     onError: (error) => {
       console.error('Chat error:', error);
@@ -105,34 +105,34 @@ export function ChatWindow({
   return (
     <ErrorBoundary>
       <div className={`flex flex-col h-screen bg-bg-primary transition-colors duration-200 ${className}`}>
-            {/* 顶部工具栏 */}
-            <div className="flex items-center justify-between p-4 bg-bg-primary">
-              <div className="flex items-center space-x-3">
-                <h1 className="text-xl font-semibold text-text-primary">
-                  {title}
-                </h1>
+        {/* 顶部工具栏 */}
+        <div className="flex items-center justify-between p-4 bg-bg-primary">
+          <div className="flex items-center space-x-3">
+            <h1 className="text-xl font-semibold text-text-primary">
+              {title}
+            </h1>
+          </div>
+          <div className="flex items-center space-x-3">
+            {toolbarActions ? (
+              <div className="flex items-center space-x-2 text-sm text-text-secondary">
+                {toolbarActions}
               </div>
-              <div className="flex items-center space-x-3">
-                {toolbarActions ? (
-                  <div className="flex items-center space-x-2 text-sm text-text-secondary">
-                    {toolbarActions}
-                  </div>
-                ) : null}
-                <ThemeSelector />
-              </div>
-            </div>
+            ) : null}
+            <ThemeSelector />
+          </div>
+        </div>
 
         {/* 错误信息显示 */}
         <ErrorMessage
           error={error}
           onRetry={retry}
-          onDismiss={() => {}} // 可以添加清除错误的功能
+          onDismiss={() => { }} // 可以添加清除错误的功能
           retryCount={retryCount}
           maxRetries={3}
         />
 
         {/* 聊天对话展示区域 - 全屏阅读体验 */}
-        <div 
+        <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto px-4 py-6 bg-bg-primary"
         >
@@ -185,40 +185,40 @@ export function ChatWindow({
         {/* 输入表单区域 - 全屏宽度 */}
         <div className="bg-bg-primary">
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4">
-            <div className="flex items-end space-x-3">
-              <div className="flex-1">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={placeholder}
-                  disabled={isLoading}
-                  rows={1}
-                  className="w-full px-4 py-3 rounded-2xl bg-bg-tertiary text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent disabled:bg-bg-secondary disabled:cursor-not-allowed resize-none text-base leading-relaxed border-0 shadow-sm"
-                  style={{ minHeight: '48px', maxHeight: '120px' }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      if (input.trim() && !isLoading) {
-                        const messageToSend = input.trim();
-                        setInput(''); // 立即清除输入框
-                        void sendMessage(messageToSend, requestMetadata);
-                      }
+            <div className="relative flex-1">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={placeholder}
+                disabled={isLoading}
+                rows={1}
+                className="w-full pl-4 pr-12 py-3 rounded-2xl bg-bg-tertiary text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent disabled:bg-bg-secondary disabled:cursor-not-allowed resize-none text-base leading-relaxed border-0 shadow-sm"
+                style={{ minHeight: '48px', maxHeight: '120px' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (input.trim() && !isLoading) {
+                      const messageToSend = input.trim();
+                      setInput(''); // 立即清除输入框
+                      void sendMessage(messageToSend, requestMetadata);
+                    }
+                  }
+                }}
+              />
+              <div className="absolute right-2 bottom-2">
+                <SendButton
+                  isLoading={isLoading}
+                  disabled={!input.trim()}
+                  onClick={() => {
+                    if (input.trim() && !isLoading) {
+                      const messageToSend = input.trim();
+                      setInput('');
+                      void sendMessage(messageToSend, requestMetadata);
                     }
                   }}
                 />
               </div>
-              <SendButton
-                isLoading={isLoading}
-                disabled={!input.trim()}
-                onClick={() => {
-                  if (input.trim() && !isLoading) {
-                    const messageToSend = input.trim();
-                    setInput('');
-                    void sendMessage(messageToSend, requestMetadata);
-                  }
-                }}
-              />
             </div>
           </form>
         </div>

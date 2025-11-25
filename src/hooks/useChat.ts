@@ -38,11 +38,6 @@ interface PerformanceMetrics {
 
 interface StreamMetadata {
   requestId?: string;
-  references?: Array<{
-    index: number;
-    title: string;
-    url?: string;
-  }>;
   [key: string]: unknown;
 }
 
@@ -155,32 +150,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
                     requestId: metadata.requestId ?? prev.requestId,
                     startTime: Date.now()
                   }));
-
-                  if (metadata.references) {
-                    setMessages(prev => {
-                      const context = streamingMessageRef.current;
-                      if (!context || context.requestId !== requestId) {
-                        return prev;
-                      }
-
-                      const { index } = context;
-                      const target = prev[index];
-                      if (!target) {
-                        return prev;
-                      }
-
-                      const updatedMessages = [...prev];
-                      updatedMessages[index] = {
-                        ...target,
-                        references: metadata.references,
-                        metadata: {
-                          ...(target.metadata ?? {}),
-                          references: metadata.references,
-                        },
-                      };
-                      return updatedMessages;
-                    });
-                  }
                   break;
                 }
 
